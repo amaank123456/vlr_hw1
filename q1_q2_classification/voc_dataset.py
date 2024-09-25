@@ -20,7 +20,7 @@ class VOCDataset(Dataset):
     for i in range(len(CLASS_NAMES)):
         INV_CLASS[CLASS_NAMES[i]] = i
 
-    def __init__(self, split, size, data_dir='data/VOCdevkit/VOC2007/'):
+    def __init__(self, split, size, data_dir='/mnt/data/VOCdevkit/VOC2007/'):
         super().__init__()
         self.split = split
         self.data_dir = data_dir
@@ -64,6 +64,17 @@ class VOCDataset(Dataset):
             # https://docs.python.org/3/library/xml.etree.elementtree.html)
             # Loop through the `tree` to find all objects in the image
             #######################################################################
+            root = tree.getroot() # Tree root
+            class_lst = [] 
+            for child in root:
+                if child.tag == 'object':
+                    child_lst = child.getchildren()
+                    for item in child_lst:
+                        if item.tag == 'name':
+                            name = item.text
+                        elif item.tag == 'difficult':
+                            difficulty = item.text
+                    class_lst.append((name, difficulty))
 
             #  The class vector should be a 20-dimensional vector with class[i] = 1 if an object of class i is present in the image and 0 otherwise
             class_vec = torch.zeros(20)
@@ -71,6 +82,14 @@ class VOCDataset(Dataset):
             # The weight vector should be a 20-dimensional vector with weight[i] = 0 iff an object of class i has the `difficult` attribute set to 1 in the XML file and 1 otherwise
             # The difficult attribute specifies whether a class is ambiguous and by setting its weight to zero it does not contribute to the loss during training 
             weight_vec = torch.ones(20)
+
+            for item in class_lst:
+                idx = self.get_class_index(item[0])
+                if class_vec[idx] == 1:
+                    weight_vec[idx] = 0 if item[1] == '1' else 1
+                    continue
+                class_vec[idx] = 1
+                weight_vec[idx] = 0 if item[1] == '1' else 1
 
             ######################################################################
             #                            END OF YOUR CODE                        #
@@ -92,7 +111,18 @@ class VOCDataset(Dataset):
         # change and you will have to write the correct value of `flat_dim`
         # in line 46 in simple_cnn.py
         ######################################################################
-        pass
+        if self.split == "trainval": # start smaller with the augmentations
+            return [
+                # transforms.RandomResizedCrop(size=(self.size, self.size)),
+                transforms.RandomHorizontalFlip(),
+                # transforms.RandomRotation(degrees=15),
+                # transforms.RandomAffine(degrees=20, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+                # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+                # transforms.ColorJitter(),
+            ]
+        else:
+            # return [transforms.CenterCrop(size=(self.size, self.size))]
+            return []
         ######################################################################
         #                            END OF YOUR CODE                        #
         ######################################################################
@@ -111,7 +141,7 @@ class VOCDataset(Dataset):
         img = Image.open(fpath)
 
         trans = transforms.Compose([
-            transforms.Resize(self.size),
+            transforms.Resize((self.size, self.size)),
             *self.get_random_augmentations(),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.457, 0.407], std=[0.5, 0.5, 0.5]),

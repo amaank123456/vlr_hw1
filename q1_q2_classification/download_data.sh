@@ -1,8 +1,8 @@
 # This script downloads and extracts data to a specified folder 
 
-data_folder=data # TODO modify to where you want to store the data
+data_folder=/mnt/data # TODO modify to where you want to store the data
 
-mkdir $data_folder
+# mkdir $data_folder
 cd $data_folder
 
 echo "> Downloading datasets to $data_folder"

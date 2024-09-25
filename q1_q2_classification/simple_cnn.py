@@ -38,11 +38,21 @@ class SimpleCNN(nn.Module):
         self.pool2 = nn.AvgPool2d(2, 2)
 
         # TODO set the correct dim here
-        self.flat_dim = None
+        out_size1 = self._calculate_conv_out_size(inp_size, 2, 1, 5, 1)
+        out_size2 = self._calculate_avg_pool_out_size(out_size1, 0, 2, 2)
+        out_size3 = self._calculate_conv_out_size(out_size2, 2, 1, 5, 1)
+        out_size4 = self._calculate_avg_pool_out_size(out_size3, 0, 2, 2)
+        self.flat_dim = 64 * out_size4 * out_size4
 
         # Sequential is another way of chaining the layers.
         self.fc1 = nn.Sequential(*get_fc(self.flat_dim, 128, 'none'))
         self.fc2 = nn.Sequential(*get_fc(128, num_classes, 'none'))
+    
+    def _calculate_conv_out_size(self, inp_size, padding, dilation, kernel_size, stride):
+        return (inp_size + 2*padding - dilation * (kernel_size-1) - 1)//stride + 1
+    
+    def _calculate_avg_pool_out_size(self, inp_size, padding, kernel_size, stride):
+        return (inp_size + 2*padding - kernel_size)//stride + 1
 
     def forward(self, x):
         """

@@ -22,6 +22,12 @@ def save_model(epoch, model_name, model):
     torch.save(model, filename)
 
 
+def ce_loss(output, target, wgt):
+    denom = torch.sum(torch.exp(output-torch.max(output)), dim=1, keepdims=True)
+    probs = torch.exp(output-torch.max(output)) / denom
+    output = -torch.sum(wgt * torch.log(probs) * target, dim=1).mean()
+    return output
+
 def train(args, model, optimizer, scheduler=None, model_name='model'):
     writer = SummaryWriter()
     train_loader = utils.get_data_loader(
@@ -53,7 +59,7 @@ def train(args, model, optimizer, scheduler=None, model_name='model'):
             # Function Outputs:
             #   - `output`: Computed loss, a single floating point number
             ##################################################################
-            loss = 0
+            loss = ce_loss(output, target, wgt)
             ##################################################################
             #                          END OF YOUR CODE                      #
             ##################################################################
