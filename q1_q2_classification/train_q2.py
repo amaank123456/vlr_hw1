@@ -8,6 +8,38 @@ import torchvision
 import torch.nn as nn
 import random
 
+class ARGS():
+    def __init__(self, 
+            epochs=10, 
+            inp_size=64, 
+            use_cuda=True, 
+            val_every=70, 
+            lr=1e-3, 
+            batch_size=32, 
+            step_size=5, 
+            gamma=0.1, 
+            test_batch_size=32, 
+            log_every=1,
+            save_freq=5,
+            save_at_end=True):
+        self.epochs = epochs
+        self.inp_size = inp_size
+        self.use_cuda = use_cuda
+        self.val_every = val_every
+        self.lr = lr
+        self.batch_size = batch_size
+        self.step_size = step_size
+        self.gamma = gamma
+        self.test_batch_size = test_batch_size
+        self.log_every = log_every
+        self.save_freq = save_freq
+        self.save_at_end = save_at_end
+
+        if self.use_cuda:
+            self.device = 'cuda'
+        else:
+            self.device = 'cpu'
+
 
 class ResNet(nn.Module):
     def __init__(self, num_classes) -> None:
@@ -17,7 +49,15 @@ class ResNet(nn.Module):
         ##################################################################
         # TODO: Define a FC layer here to process the features
         ##################################################################
-        pass
+        self.resnet.fc = nn.Linear(in_features=512, out_features=num_classes)
+        for param in self.resnet.parameters():
+            param.requires_grad = False
+        
+        # Unfreeze the parameters in the fully connected layer and others
+        for param in self.resnet.fc.parameters():
+            param.requires_grad = True
+        self.resnet.layer1[1].conv1.weight.requires_grad = True
+        self.resnet.layer4[0].bn2.bias.requires_grad = True
         ##################################################################
         #                          END OF YOUR CODE                      #
         ##################################################################
@@ -27,7 +67,8 @@ class ResNet(nn.Module):
         ##################################################################
         # TODO: Return raw outputs here
         ##################################################################
-        pass
+        out = self.resnet(x)
+        return out
         ##################################################################
         #                          END OF YOUR CODE                      #
         ##################################################################
@@ -43,18 +84,20 @@ if __name__ == "__main__":
     # We will use a size of 224x224 for the rest of the questions. 
     # Note that you might have to change the augmentations
     # You should experiment and choose the correct hyperparameters
-    # You should get a map of around 50 in 50 epochs
+    # You should get a map of around 0.8 in 50 epochs
     ##################################################################
-    # args = ARGS(
-    #     epochs=50,
-    #     inp_size=64,
-    #     use_cuda=True,
-    #     val_every=70
-    #     lr=# TODO,
-    #     batch_size=#TODO,
-    #     step_size=#TODO,
-    #     gamma=#TODO
-    # )
+    args = ARGS(
+        epochs=50, # maybe train for 10 epochs
+        inp_size=224,
+        use_cuda=True,
+        val_every=50,
+        lr=1e-3,
+        batch_size=128,
+        step_size=20, # maybe increase
+        gamma=0.5,
+        test_batch_size=256,
+        log_every=5,
+    )
     ##################################################################
     #                          END OF YOUR CODE                      #
     ##################################################################
