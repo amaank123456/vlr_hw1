@@ -6,38 +6,6 @@ from voc_dataset import VOCDataset
 import numpy as np
 import random
 
-class ARGS():
-    def __init__(self, 
-            epochs=10, 
-            inp_size=64, 
-            use_cuda=True, 
-            val_every=70, 
-            lr=1e-3, 
-            batch_size=32, 
-            step_size=5, 
-            gamma=0.1, 
-            test_batch_size=32, 
-            log_every=1,
-            save_freq=5,
-            save_at_end=True):
-        self.epochs = epochs
-        self.inp_size = inp_size
-        self.use_cuda = use_cuda
-        self.val_every = val_every
-        self.lr = lr
-        self.batch_size = batch_size
-        self.step_size = step_size
-        self.gamma = gamma
-        self.test_batch_size = test_batch_size
-        self.log_every = log_every
-        self.save_freq = save_freq
-        self.save_at_end = save_at_end
-
-        if self.use_cuda:
-            self.device = 'cuda'
-        else:
-            self.device = 'cpu'
-
 if __name__ == "__main__":
     np.random.seed(0)
     torch.manual_seed(0)
@@ -51,7 +19,7 @@ if __name__ == "__main__":
     # You should get a map of around 22 in 5 epochs
     ##################################################################
     args = ARGS(
-        epochs=5, # maybe train for 10 epochs
+        epochs=15,
         inp_size=64,
         use_cuda=True,
         val_every=20,
@@ -59,7 +27,7 @@ if __name__ == "__main__":
         batch_size=256,
         step_size=20, # maybe increase
         gamma=0.5,
-        test_batch_size=256,
+        test_batch_size=1000,
         log_every=5,
     )
     ##################################################################

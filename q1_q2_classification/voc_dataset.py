@@ -112,16 +112,9 @@ class VOCDataset(Dataset):
         # in line 46 in simple_cnn.py
         ######################################################################
         if self.split == "trainval": # start smaller with the augmentations
-            return [
-                # transforms.RandomResizedCrop(size=(self.size, self.size)),
-                transforms.RandomHorizontalFlip(),
-                # transforms.RandomRotation(degrees=15),
-                # transforms.RandomAffine(degrees=20, translate=(0.1, 0.1), scale=(0.9, 1.1)),
-                # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-                # transforms.ColorJitter(),
-            ]
+            return [transforms.RandomHorizontalFlip()]
+            # return []
         else:
-            # return [transforms.CenterCrop(size=(self.size, self.size))]
             return []
         ######################################################################
         #                            END OF YOUR CODE                        #

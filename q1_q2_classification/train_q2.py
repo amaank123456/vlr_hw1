@@ -8,39 +8,6 @@ import torchvision
 import torch.nn as nn
 import random
 
-class ARGS():
-    def __init__(self, 
-            epochs=10, 
-            inp_size=64, 
-            use_cuda=True, 
-            val_every=70, 
-            lr=1e-3, 
-            batch_size=32, 
-            step_size=5, 
-            gamma=0.1, 
-            test_batch_size=32, 
-            log_every=1,
-            save_freq=5,
-            save_at_end=True):
-        self.epochs = epochs
-        self.inp_size = inp_size
-        self.use_cuda = use_cuda
-        self.val_every = val_every
-        self.lr = lr
-        self.batch_size = batch_size
-        self.step_size = step_size
-        self.gamma = gamma
-        self.test_batch_size = test_batch_size
-        self.log_every = log_every
-        self.save_freq = save_freq
-        self.save_at_end = save_at_end
-
-        if self.use_cuda:
-            self.device = 'cuda'
-        else:
-            self.device = 'cpu'
-
-
 class ResNet(nn.Module):
     def __init__(self, num_classes) -> None:
         super().__init__()
@@ -90,13 +57,14 @@ if __name__ == "__main__":
         epochs=50, # maybe train for 10 epochs
         inp_size=224,
         use_cuda=True,
-        val_every=50,
         lr=1e-3,
         batch_size=128,
         step_size=20, # maybe increase
         gamma=0.5,
         test_batch_size=256,
-        log_every=5,
+        save_at_end=True,
+        log_every=20,
+        val_every=20
     )
     ##################################################################
     #                          END OF YOUR CODE                      #

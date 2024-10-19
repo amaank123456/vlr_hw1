@@ -40,7 +40,7 @@ NUM_CLASSES = 20
 BATCH_SIZE = 16
 IMAGE_SHAPE = (224, 224)
 NUM_WORKERS = 12
-DATASET_PATH = "../data"
+DATASET_PATH = "/mnt/data"
 
 @dataclass
 class HyperParameters:
@@ -185,7 +185,7 @@ def main(args):
             detector,
             small_val_loader,
             val_dataset.idx_to_class,
-            score_thresh=0.7,
+            score_thresh=0.5,
             nms_thresh=0.5,
             device=DEVICE,
             dtype=torch.float32,
@@ -201,7 +201,7 @@ def main(args):
             detector,
             val_loader,
             val_dataset.idx_to_class,
-            score_thresh=0.4,
+            score_thresh=0.5,
             nms_thresh=0.6,
             device=DEVICE,
             dtype=torch.float32,
